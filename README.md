@@ -2,6 +2,9 @@
 
 > 基于**麦当劳中国 MCP** 的多目标点餐决策引擎 —— 在**预算、热量、蛋白质、优惠券**四维约束下，
 > 用真实的门店菜单、营养数据与官方核价接口，算出「今天到底该点什么」。
+>
+> 📦 仓库：<https://github.com/2404589803/mcd-smart-planner>　
+> ⭐ 本项目按大赛规则以 GitHub Star 数排名，觉得有用的话欢迎点个 Star。
 
 [![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![MCP](https://img.shields.io/badge/MCP-Streamable%20HTTP-DA291C)](https://github.com/M-China/mcd-mcp-server)
@@ -34,26 +37,40 @@ $ mcd plan --city 上海 --kw 人民广场 --budget 40 --kcal-max 900
 
 ──── 麦麦精算师 · 决策报告 ──────────────────────────────
 门店：麦当劳上海黄浦华旭国际大厦餐厅（1450713）
-时间：2026-10-09 14:15:26  时段：午餐时段
+时间：2026-10-09 14:39:01  时段：下午茶时段
+提示：小食甜品 / 麦咖啡随心配
 菜单 121 项（价格口径可信 100 项）/ 营养基线 160 项
-      (精确命中 38，模糊 18，估算 65)
+      (精确命中 42，模糊 30，估算 49)
 
 ──── 推荐方案 ──────────────────────────────
-  方案 1｜轻负担控卡   ¥37.80   668 kcal   蛋白 38.1 g   钠 905 mg
-      ×1  大堡口福三件套          ¥22.90   301 kcal ≈
-      ×1  蘸酱麦麦脆汁鸡          ¥11.90   328 kcal
-      ×1  韩式烟熏芝士风味酱       ¥3.00    39 kcal ≈
-      实付核价 ¥37.80（菜单合计 ¥37.80，优惠 ¥0.00）
+  方案 1｜轻负担控卡   ¥37.70   791 kcal   蛋白 50.0 g   钠 1887 mg
+      ×1  浓浓黑巧（冰/热）       ¥13.90   135 kcal
+      ×2  蘸酱麦麦脆汁鸡          ¥23.80   656 kcal
+      实付核价 ¥37.70（菜单合计 ¥37.70，优惠 ¥7.10）
 
-  方案 2｜营养均衡     ¥38.70   852 kcal   蛋白 51.8 g
-  方案 3｜最省钱包     ¥38.80   510 kcal   蛋白 25.6 g
-  方案 4｜高蛋白增肌   ¥39.80   848 kcal   蛋白 53.0 g
+  方案 2｜营养均衡     ¥38.80   840 kcal   蛋白 51.2 g   钠 2128 mg
+      ×1  麦当劳奶昔              ¥15.00   184 kcal ≈
+      ×2  蘸酱麦麦脆汁鸡          ¥23.80   656 kcal
+
+  方案 3｜最省钱包     ¥38.80   477 kcal   蛋白 23.9 g   钠  822 mg
+      ×1  大堡口福三件套          ¥22.90   281 kcal ≈
+      ×1  “我就喜欢”鸡薯双全盒     ¥15.90   195 kcal ≈
+
+  方案 4｜高蛋白增肌   ¥39.80   848 kcal   蛋白 53.0 g   钠 1978 mg
+      ×1  那么大鸡排（椒盐风味）   ¥14.00   385 kcal
+      ×1  浓浓黑巧（冰/热）       ¥13.90   135 kcal
+      ×1  蘸酱麦麦脆汁鸡          ¥11.90   328 kcal
+      实付核价 ¥39.80（菜单合计 ¥39.80，优惠 ¥7.10）
 
 ──── MCP 调用链 ──────────────────────────────
-  now-time-info  ok  3.9s → campaign-calendar ok 3.8s
-  → available-coupons → query-my-coupons → query-store-coupons
-  → query-meals → calculate-price ×5（标准名/核价反查）
-  → list-nutrition-foods → calculate-price ×4（整单核价）
+  now-time-info      ok  3.5s
+  campaign-calendar  ok 12.5s
+  available-coupons  ok  8.0s
+  query-my-coupons   ok  3.3s
+  query-nearby-stores → query-meals（121 项）
+  → calculate-price ×5（官方标准名/核价反查）
+  → list-nutrition-foods（160 条营养基线）
+  → calculate-price ×N（整单核价，超预算方案直接淘汰）
 ```
 
 ### Web 界面

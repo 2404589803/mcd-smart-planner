@@ -25,8 +25,9 @@ dev = ["pytest>=7.0"]
 mcd = "mcd_mcp.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/M-China/mcd-developer-innovation-challenge"
-Source = "https://github.com/M-China/mcd-developer-innovation-challenge"
+Homepage = "https://github.com/2404589803/mcd-smart-planner"
+Source = "https://github.com/2404589803/mcd-smart-planner"
+Contest = "https://github.com/M-China/mcd-developer-innovation-challenge"
 
 [tool.setuptools.packages.find]
 where = "src"
