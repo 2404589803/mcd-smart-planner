@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>麦麦精算师 · McSmart</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --line:#e8e6e0; --ink:#1c1b19; --ink2:#6b6862;
+    --ink3:#9a968e; --brand:#DA291C; --gold:#FFC72C; --ok:#1f8a4c; --warn:#b06000;
+    --soft:#f2efe7; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:14px/1.6 -apple-system,"PingFang SC","Microsoft YaHei",Segoe UI,sans-serif}
+  a{color:var(--brand)}
+  header{background:linear-gradient(120deg,#1c1b19 0%,#2b2723 60%,#3a2f22 100%);
+         color:#fff;padding:22px 28px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  header .logo{width:40px;height:40px;border-radius:12px;background:var(--gold);
+               display:grid;place-items:center;font-size:22px}
+  header h1{margin:0;font-size:19px;letter-spacing:.5px}
+  header p{margin:2px 0 0;font-size:12px;color:#cfcac0}
+  header .spacer{flex:1}
+  .badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+         padding:4px 10px;border-radius:999px;font-size:12px}
+  main{display:grid;grid-template-columns:340px 1fr;gap:18px;padding:18px 28px 48px;
+       max-width:1400px;margin:0 auto}
+  @media(max-width:980px){main{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+        padding:18px;margin-bottom:16px}
+  .card h2{margin:0 0 14px;font-size:14px;letter-spacing:.3px;display:flex;align-items:center;gap:8px}
+  .card h2::before{content:"";width:4px;height:14px;background:var(--gold);border-radius:2px}
+  label{display:block;font-size:12px;color:var(--ink2);margin:12px 0 5px}
+  input,select{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;
+               background:#fff;font-size:13px;color:var(--ink)}
+  input:focus,select:focus{outline:2px solid var(--gold);outline-offset:0}
+  .row{display:flex;gap:8px}
+  .row>*{flex:1}
+  button{width:100%;margin-top:16px;padding:11px;border:none;border-radius:10px;
+         background:var(--brand);color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+  button:hover{filter:brightness(1.08)}
+  button.ghost{background:#fff;color:var(--ink);border:1px solid var(--line);margin-top:8px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .chip{padding:5px 10px;border:1px solid var(--line);border-radius:999px;font-size:12px;
+        cursor:pointer;background:#fff;user-select:none}
+  .chip.on{background:var(--gold);border-color:var(--gold);font-weight:600}
+  .hint{font-size:11px;color:var(--ink3);margin-top:6px}
+  .store{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);
+         border-radius:9px;margin-top:6px;cursor:pointer;background:#fff}
+  .store:hover{border-color:var(--gold)}
+  .store.on{border-color:var(--brand);background:#fff6f5}
+  .store b{font-size:13px}
+  .store small{color:var(--ink3);display:block;font-size:11px}
+  /* ---------- 结果 ---------- */
+  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+  .metric{background:var(--soft);border-radius:10px;padding:10px 12px}
+  .metric span{display:block;font-size:11px;color:var(--ink2)}
+  .metric b{font-size:17px}
+  .plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+  .plan{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff;
+        display:flex;flex-direction:column}
+  .plan.hot{border-color:var(--gold);box-shadow:0 2px 14px rgba(255,199,44,.25)}
+  .plan .tag{display:inline-block;background:var(--gold);color:#3a2f22;font-size:11px;
+             font-weight:700;padding:3px 9px;border-radius:999px}
+  .plan .tag.over{background:#fdecea;color:var(--brand)}
+  .plan .price{font-size:22px;font-weight:700;margin:8px 0 2px}
+  .plan .price small{font-size:12px;font-weight:400;color:var(--ink2)}
+  .plan table{width:100%;border-collapse:collapse;margin-top:10px;font-size:12.5px}
+  .plan td{padding:5px 0;border-top:1px dashed var(--line);color:var(--ink2)}
+  .plan td.n{text-align:right;color:var(--ink);white-space:nowrap}
+  .bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:8px}
+  .bar i{display:block;height:100%;background:var(--brand)}
+  .bar.g i{background:var(--ok)}
+  .verify{margin-top:10px;font-size:11.5px;color:var(--ink2);background:var(--soft);
+          border-radius:8px;padding:7px 9px}
+  .verify b{color:var(--ok)}
+  .trace{display:flex;flex-wrap:wrap;gap:6px}
+  .trace span{font-size:11px;background:var(--soft);border-radius:6px;padding:4px 8px;
+              font-family:ui-monospace,Menlo,Consolas,monospace}
+  .trace span.cache{opacity:.55}
+  .list{font-size:12.5px;color:var(--ink2)}
+  .list div{padding:5px 0;border-top:1px dashed var(--line)}
+  .list div:first-child{border-top:none}
+  .loading{display:flex;align-items:center;gap:10px;color:var(--ink2);font-size:13px;padding:12px 0}
+  .spin{width:16px;height:16px;border:2px solid var(--line);border-top-color:var(--brand);
+        border-radius:50%;animation:r .8s linear infinite}
+  @keyframes r{to{transform:rotate(360deg)}}
+  .empty{color:var(--ink3);font-size:13px;padding:16px 0;text-align:center}
+  footer{max-width:1400px;margin:0 auto;padding:0 28px 40px;color:var(--ink3);font-size:11.5px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">🍔</div>
+  <div>
+    <h1>麦麦精算师 · McSmart</h1>
+    <p>基于麦当劳中国 MCP 的多目标点餐决策引擎 — 预算 × 热量 × 蛋白 × 优惠券</p>
+  </div>
+  <div class="spacer"></div>
+  <div class="badge" id="status">未连接</div>
+</header>
+
+<main>
+  <!-- 参数面板 -->
+  <section>
+    <div class="card">
+      <h2>1 · 定位门店</h2>
+      <div class="row">
+        <input id="city" placeholder="城市，如 上海" value="上海">
+        <input id="kw" placeholder="地标/地址关键词" value="人民广场">
+      </div>
+      <button class="ghost" id="btn-stores" style="margin-top:8px">搜索门店</button>
+      <div id="stores"></div>
+      <div class="hint">门店来自 MCP <code>query-nearby-stores</code> 实时返回</div>
+    </div>
+
+    <div class="card">
+      <h2>2 · 设定约束</h2>
+      <label>预算上限（元）</label>
+      <input id="budget" type="number" value="40" step="1">
+      <div class="row">
+        <div><label>热量下限 kcal</label><input id="kcalMin" type="number" value="0"></div>
+        <div><label>热量上限 kcal</label><input id="kcalMax" type="number" value="900"></div>
+      </div>
+      <label>蛋白质下限（g）</label>
+      <input id="proteinMin" type="number" value="0">
+      <div class="row">
+        <div><label>用餐人数</label><input id="people" type="number" value="1" min="1"></div>
+        <div><label>最多品类数</label><input id="maxItems" type="number" value="4" min="1" max="4"></div>
+      </div>
+      <label>优化目标（可多选）</label>
+      <div class="chips" id="presets">
+        <div class="chip on" data-v="balanced">营养均衡</div>
+        <div class="chip on" data-v="cheapest">最省钱包</div>
+        <div class="chip on" data-v="high_protein">高蛋白增肌</div>
+        <div class="chip on" data-v="light">轻负担控卡</div>
+      </div>
+      <div class="hint">关闭「预算严格模式」会允许菜单价与核价不一致的促销餐品参与</div>
+      <button id="btn-plan">生成方案</button>
+    </div>
+  </section>
+
+  <!-- 结果区 -->
+  <section>
+    <div class="card">
+      <h2>决策概览</h2>
+      <div id="overview"><div class="empty">设置约束后点击「生成方案」</div></div>
+    </div>
+
+    <div class="card">
+      <h2>推荐方案</h2>
+      <div id="plans" class="plans"><div class="empty">—</div></div>
+    </div>
+
+    <div class="card">
+      <h2>今日活动 · 可领券</h2>
+      <div class="row" style="gap:16px">
+        <div style="flex:1"><div class="hint" style="margin-bottom:6px">活动雷达（campaign-calendar）</div>
+          <div id="campaigns" class="list"></div></div>
+        <div style="flex:1"><div class="hint" style="margin-bottom:6px">麦麦省可领券（available-coupons）</div>
+          <div id="coupons" class="list"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>MCP 调用链</h2>
+      <div id="trace" class="trace"><span>—</span></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  餐品、价格、营养与供应状态均以麦当劳官方渠道实时结果为准；本工具输出仅供参考，不构成营养或医疗建议。
+  标 <b>≈</b> 的餐品营养为按价格估算值，非官方营养数据。
+</footer>
+
+<script>
+const $ = s => document.querySelector(s);
+let storeCode = "";
+
+(async function init(){
+  try{
+    const r = await fetch('/api/tools').then(x=>x.json());
+    $('#status').textContent = r.ok ? `MCP 已连接 · ${r.tools.length} 个工具` : 'MCP 未连接';
+  }catch(e){ $('#status').textContent = 'MCP 未连接'; }
+})();
+
+$('#btn-stores').onclick = async () => {
+  $('#stores').innerHTML = '<div class="loading"><i class="spin"></i>定位门店…</div>';
+  const r = await post('/api/stores', {city:$('#city').value, kw:$('#kw').value, be_type:1});
+  if(!r.ok || !r.stores.length){ $('#stores').innerHTML = '<div class="empty">未找到门店</div>'; return; }
+  $('#stores').innerHTML = r.stores.slice(0,6).map(s => `
+    <div class="store${s.store_code===storeCode?' on':''}" data-code="${s.store_code}">
+      <div><b>${s.name}</b><small>${s.address||''} · ${s.distance?Math.round(s.distance)+'m':''} · ${s.business_hours||''}</small>
+      <small>storeCode ${s.store_code}</small></div>
+    </div>`).join('');
+  document.querySelectorAll('.store').forEach(el => el.onclick = () => {
+    storeCode = el.dataset.code;
+    document.querySelectorAll('.store').forEach(x=>x.classList.remove('on'));
+    el.classList.add('on');
+  });
+  storeCode = r.stores[0].store_code;
+  document.querySelector('.store').classList.add('on');
+};
+
+document.querySelectorAll('.chip').forEach(c => c.onclick = () => c.classList.toggle('on'));
+
+$('#btn-plan').onclick = async () => {
+  $('#overview').innerHTML = '<div class="loading"><i class="spin"></i>正在跑 MCP 链路（菜单→营养→求解→核价），约需 30-60 秒…</div>';
+  $('#plans').innerHTML = '';
+  const presets = [...document.querySelectorAll('.chip.on')].map(c=>c.dataset.v);
+  const r = await post('/api/plan', {
+    city:$('#city').value, kw:$('#kw').value, store:storeCode,
+    budget:+$('#budget').value, kcal_min:+$('#kcalMin').value, kcal_max:+$('#kcalMax').value,
+    protein_min:+$('#proteinMin').value, people:+$('#people').value, max_items:+$('#maxItems').value,
+    presets: presets.length ? presets : null, require_drink:true, verify_price:true
+  });
+  if(!r.ok){ $('#overview').innerHTML = `<div class="empty">${r.error||'出错了'}</div>`; return; }
+  render(r.report);
+};
+
+async function post(url, body){
+  const res = await fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+  return res.json();
+}
+
+function render(rep){
+  const st = rep.nutrition_stats || {};
+  $('#overview').innerHTML = `
+    <div class="metrics">
+      <div class="metric"><span>门店</span><b style="font-size:13px">${(rep.store&&rep.store.name)||'-'}</b></div>
+      <div class="metric"><span>时段</span><b style="font-size:13px">${rep.period||'-'}</b></div>
+      <div class="metric"><span>菜单 / 可信价</span><b>${rep.menu_size||0} / ${(rep.menu_size||0)-(st.unreliable||0)}</b></div>
+      <div class="metric"><span>营养基线</span><b>${rep.nutrition_size||0}</b></div>
+      <div class="metric"><span>精确 / 模糊 / 估算</span><b>${st.matched||0}/${st.fuzzy||0}/${st.missing||0}</b></div>
+    </div>`;
+
+  const plans = rep.plans || [];
+  if(!plans.length){ $('#plans').innerHTML = '<div class="empty">当前约束下无可行方案，试试放宽预算或热量上限</div>'; }
+  $('#plans').innerHTML = plans.map((p,i) => {
+    const rows = p.items.map(it => `
+      <tr><td>×${it.quantity} ${it.item.name}${it.item.nutrition_estimated?' <b>≈</b>':''}</td>
+          <td class="n">¥${it.subtotal.toFixed(2)}<br><small>${Math.round(it.kcal)} kcal</small></td></tr>`).join('');
+    const pct = Math.min(100, rep.constraints && rep.constraints.kcal_max ? p.total_kcal/rep.constraints.kcal_max*100 : 0);
+    const ppct = Math.min(100, rep.constraints && rep.constraints.budget ? p.total_price/rep.constraints.budget*100 : 0);
+    return `<div class="plan${i===0?' hot':''}">
+      <span class="tag${p.over_budget?' over':''}">${p.name}${p.over_budget?' · 超预算':''}</span>
+      <div class="price">¥${p.total_price.toFixed(2)} <small>／ ${p.total_kcal} kcal</small></div>
+      <div class="hint">蛋白 ${p.total_protein} g · 脂肪 ${p.total_fat} g · 碳水 ${p.total_carbohydrate} g · 钠 ${p.total_sodium} mg</div>
+      <div class="bar"><i style="width:${ppct}%"></i></div>
+      <div class="hint">预算占用 ${ppct.toFixed(0)}%</div>
+      <div class="bar g"><i style="width:${pct}%"></i></div>
+      <div class="hint">热量占用 ${pct.toFixed(0)}%</div>
+      <table>${rows}</table>
+      ${p.verified_price!=null?`<div class="verify">实付核价 <b>¥${p.verified_price.toFixed(2)}</b>（菜单合计 ¥${p.list_price.toFixed(2)}${p.verified_discount?`，优惠 ¥${p.verified_discount.toFixed(2)}`:''}）</div>`:''}
+    </div>`;
+  }).join('');
+
+  $('#campaigns').innerHTML = (rep.campaigns||[]).slice(0,6).map(c=>
+    `<div><b>${c.title}</b><br><small>${c.date} · ${c.phase}</small></div>`).join('') || '<div class="empty">—</div>';
+  $('#coupons').innerHTML = (rep.coupons_available||[]).slice(0,8).map(c=>
+    `<div>${c.title} <small>${c.status||''}</small></div>`).join('') || '<div class="empty">暂无可领券</div>';
+  $('#trace').innerHTML = (rep.tool_trace||[]).map(t=>
+    `<span class="${t.status==='cache'?'cache':''}">${t.tool} ${t.status} ${t.ms}ms</span>`).join('') || '<span>—</span>';
+}
+</script>
+</body>
+</html>

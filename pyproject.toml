@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcd-smart-planner"
+version = "1.0.0"
+description = "麦麦精算师 · 基于麦当劳中国 MCP 的多目标点餐决策引擎（预算 × 热量 × 蛋白 × 优惠券）"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "2404589803" }]
+keywords = ["mcdonalds", "mcp", "model-context-protocol", "optimizer", "nutrition", "skill"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = []  # 零第三方依赖，仅标准库
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[project.scripts]
+mcd = "mcd_mcp.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/M-China/mcd-developer-innovation-challenge"
+Source = "https://github.com/M-China/mcd-developer-innovation-challenge"
+
+[tool.setuptools.packages.find]
+where = "src"
+
+[tool.setuptools.package-data]
+mcd_mcp = ["static/*.html"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
